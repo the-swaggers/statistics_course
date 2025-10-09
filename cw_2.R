@@ -260,15 +260,14 @@ length(filter(flights, origin == "Chicago" & dest == "Cleveland"))
 tmp <- flights[order(flights$distance), ]
 head(tmp, n=10)
 tail(tmp, n=10)
-# Zad. 11 Narysuj rysunek arr_delay~distance 
-#      dla 100-u najdluzszych lotow. 
-tmp2 <- tmp[-100:-1]
-length(tmp2)
-
+# Zad. 11 Narysuj rysunek arr_delay~distance dla 100-u najdluzszych lotow. 
+tmp <- flights[order(flights[flights$air_time != NA, ]$air_time), ]
+tmp2 <- tail(tmp, n=100)
+plot(tmp2$arr_delay, tmp2$distance)
 # Zad. 12  Jaki byla srednia wartosc arr_delay i distance dla 200-u 
 #         najdluzszych lotow?
-
+tmp2 <- tail(tmp, n=200)
+mean(tmp2$arr_delay)
+mean(tmp2$distance)
 # Zad. 13 Przeprowadzic inne (ciekawe) operacje na danych 
 #         diamonds lub flights i wykonac rysunek. 
-
-

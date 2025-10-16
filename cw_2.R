@@ -233,7 +233,7 @@ length(filter(diamonds, price > 10000))
 #Zad.5 Podaj srednia cene diamentow dla wszystkich rodzajow cut.
 qualities <- diamonds[!duplicated(diamonds$cut),]$cut
 qualities
-for (x in qualities) {
+# for (x in qualities) {
   tmp <- diamonds[diamonds$cut == x, ]
   print(mean(tmp$price))
 }
@@ -271,3 +271,44 @@ mean(tmp2$arr_delay)
 mean(tmp2$distance)
 # Zad. 13 Przeprowadzic inne (ciekawe) operacje na danych 
 #         diamonds lub flights i wykonac rysunek. 
+
+
+summary_stats <- diamonds %>%
+  group_by(cut) %>%
+  summarise(
+    mean_carat = mean(carat),
+    carat_lower = quantile(carat, 0.025),
+    carat_upper = quantile(carat, 0.975),
+    mean_price = mean(price),
+    ci_lower = quantile(price, 0.025),
+    ci_upper = quantile(price, 0.975)
+  )
+
+ggplot(diamonds, aes(x = carat, y = price, color = cut)) +
+  geom_point(alpha = 0.3, size = 0.2) +
+  
+  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs", k = 10),
+              se = TRUE, color = "black", 
+              linetype = "dashed", linewidth = 0.8,
+              inherit.aes = FALSE, aes(x = carat, y = price)) +
+  
+  geom_linerange(data = summary_stats,
+                 aes(xmin = carat_lower, xmax = carat_upper,
+                     y = mean_price, color = cut),
+                 linewidth = 0.5,
+                 inherit.aes = FALSE) +
+  
+  geom_pointrange(data = summary_stats,
+                  aes(x = mean_carat, y = mean_price,
+                      ymin = ci_lower, ymax = ci_upper, color = cut),
+                  size = 0.3, linewidth = 0.5,
+                  inherit.aes = FALSE) +
+  
+  coord_cartesian(xlim = range(diamonds$carat), ylim = range(diamonds$price)) +
+  
+  labs(title = "Diamond Price vs Carat by Cut Quality",
+       x = "Carat",
+       y = "Price ($)",
+       color = "Cut Quality") +
+  theme_minimal() +
+  theme(legend.position = "right")
